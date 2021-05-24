@@ -1,0 +1,193 @@
+import React, { useState } from "react";
+
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import Container from "@material-ui/core/Container";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Grid from "@material-ui/core/Grid";
+import Link from "@material-ui/core/Link";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import { useSnackbar } from "notistack";
+
+import Dimmer from "../../../../components/common/Dimmer";
+import Error from "../../../../components/common/Error";
+import AuthService from "../../../../services/corporate_portal/auth.service";
+import EmailService from "../../../../services/email.service";
+import Success from "./Success";
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: "transparent",
+    color: theme.palette.text.secondary,
+  },
+  lockIcon: {
+    fontSize: "40px",
+  },
+  pageTitle: {
+    marginBottom: theme.spacing(3),
+  },
+  Error: {
+    marginTop: theme.spacing(2),
+  },
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  meta: {
+    textAlign: "right",
+    "& a": {
+      color: theme.palette.text.secondary,
+    },
+  },
+}));
+
+const ForgetPassword = () => {
+  const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
+  const [email, setEmail] = useState("");
+  const [errors, setErrors] = useState([]);
+  const [registrationLink, setRegistrationLink] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const sendPasswordResetEmail = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    AuthService.passwordChangeRequest(email).then(
+      (response) => {
+        setIsLoading(false);
+        setSuccess(true);
+        enqueueSnackbar(`${email} ${response.data.message}`, {
+          variant: "success",
+        });
+        setErrors([]);
+      },
+      (error) => {
+        setIsLoading(false);
+        setSuccess(false);
+        if (error.response) {
+          const { data, status } = error.response;
+          if (status === 400) {
+            setErrors(data.message);
+          } else {
+            setErrors([]);
+          }
+          if (data && data.user && data.user.sign_dt === null) {
+            setRegistrationLink(true);
+          }
+
+          if (data && data.user && data.user.email_confirm_dt === null) {
+            setRegistrationLink(false);
+            // Send email verification link
+            EmailService.resendEmailVerification(error.response.data.user).then(
+              (response) => {
+                console.info(
+                  "resendEmailVerification response",
+                  response.response,
+                );
+              },
+              (err) => {
+                console.error(
+                  "resendEmailVerification error.response",
+                  err.response,
+                );
+              },
+            );
+          }
+        }
+      },
+    );
+    setEmail("");
+  };
+
+  return (
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon className={classes.lockIcon} />
+        </Avatar>
+        <Typography component="h1" variant="h2" className={classes.pageTitle}>
+          Forgot password
+        </Typography>
+        <Error errors={errors}>
+          {registrationLink && (
+            <Link href="/signup"> Go to user registration</Link>
+          )}
+        </Error>
+        {success && (
+          <Success
+            header="If that account in our system then we have sent an email with instructions
+              to reset your password!"
+            loginText="Sign back in"
+          />
+        )}
+        {!success && (
+          <>
+            <p>
+              It happens to the best of us. Enter your email and we&apos;ll send you
+              reset instructions.
+            </p>
+            <form
+              className={classes.form}
+              noValidate
+              onSubmit={sendPasswordResetEmail}
+            >
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                onChange={(event) => setEmail(event.target.value)}
+                inputProps={{ maxLength: 255 }}
+                helperText={`${
+                  email.length >= 255
+                    ? "Enter an email between 255 charecter"
+                    : ""
+                }`}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                disabled={!email}
+              >
+                Reset
+              </Button>
+              <Grid container className={classes.meta}>
+                <Grid item xs>
+                  <Link href="/login_corp" variant="body2">
+                    Login
+                  </Link>
+                </Grid>
+              </Grid>
+            </form>
+          </>
+        )}
+      </div>
+      <Dimmer isOpen={isLoading} />
+    </Container>
+  );
+};
+
+export default ForgetPassword;

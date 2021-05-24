@@ -1,0 +1,350 @@
+const express = require("express");
+const { authJwt } = require("../middlewares");
+const Patient = require("../controllers/patient.controller.js");
+const validation = require("../helpers/validations/patient.js");
+
+const router = express.Router();
+
+router.get("/patient/:patient_id", [authJwt.verifyToken], Patient.getPatient);
+router.put(
+  "/patient/:patient_id",
+  [authJwt.verifyToken],
+  Patient.updatePatient
+);
+router.post(
+  "/patient/:patient_id/search",
+  [authJwt.verifyToken, validation.validate("search")],
+  Patient.search
+);
+router.get(
+  "/patient/:patient_id/history",
+  [authJwt.verifyToken],
+  Patient.history
+);
+router.get(
+  "/patient/:patient_id/appointment/history",
+  [authJwt.verifyToken],
+  Patient.getAppointmenthistory
+);
+router.get(
+  "/patient/:patient_id/balance",
+  [authJwt.verifyToken],
+  Patient.balance
+);
+router.get(
+  "/patient/:patient_id/next-appointment",
+  [authJwt.verifyToken],
+  Patient.nextAppointment
+);
+router.get(
+  "/patient/:patient_id/admin-note/history",
+  [authJwt.verifyToken],
+  Patient.AdminNotehistory
+);
+router.put(
+  "/patient/:patient_id/admin-note/",
+  [authJwt.verifyToken, validation.validate("adminNoteupdate")],
+  Patient.adminNoteupdate
+);
+router.get(
+  "/patient/:patient_id/forms",
+  [authJwt.verifyToken],
+  Patient.getForms
+);
+router.get(
+  "/patient/:patient_id/forms/:id",
+  [authJwt.verifyToken, validation.validate("singleForm")],
+  Patient.getFormById
+);
+router.post(
+  "/handouts/search",
+  [authJwt.verifyToken, validation.validate("search")],
+  Patient.searchHandouts
+);
+router.get(
+  "/patient/:patient_id/handouts",
+  [authJwt.verifyToken],
+  Patient.handouts
+);
+router.delete(
+  "/patient/:patient_id/handouts/:id",
+  [authJwt.verifyToken, validation.validate("handoutDelete")],
+  Patient.handoutDelete
+);
+router.get("/patient-handout", [authJwt.verifyToken], Patient.patientHandouts);
+router.post(
+  "/patient/:patient_id/patient-handout",
+  [authJwt.verifyToken],
+  Patient.CreatePatientHandouts
+);
+router.delete(
+  "/patient/:patient_id/patient-handout/:handout_id",
+  [authJwt.verifyToken, validation.validate("DeletePatientHandouts")],
+  Patient.DeletePatientHandouts
+);
+router.get(
+  "/patient/:patient_id/tran-types",
+  [authJwt.verifyToken],
+  Patient.getTranType
+);
+router.get(
+  "/patient/:patient_id/billing",
+  [authJwt.verifyToken],
+  Patient.getBilling
+);
+router.post(
+  "/patient/:patient_id/billing",
+  [authJwt.verifyToken],
+  Patient.createBilling
+);
+router.put(
+  "/patient/:patient_id/billing/:id",
+  [authJwt.verifyToken],
+  Patient.updateBilling
+);
+router.delete(
+  "/patient/:patient_id/billing/:id",
+  [authJwt.verifyToken],
+  Patient.deleteBilling
+);
+router.get(
+  "/patient/:patient_id/billing/transactionTypes",
+  [authJwt.verifyToken],
+  Patient.getBillingTransactionTypes
+);
+router.get(
+  "/patient/:patient_id/billing/paymentOptions",
+  [authJwt.verifyToken],
+  Patient.getBillingPaymentOptions
+);
+router.get(
+  "/patient/:patient_id/allergies",
+  [authJwt.verifyToken],
+  Patient.getAllergies
+);
+router.delete(
+  "/patient/:patient_id/allergies/:drug_id",
+  [authJwt.verifyToken, validation.validate("deleteAllergy")],
+  Patient.deleteAllergy
+);
+router.post(
+  "/allergies/search",
+  [authJwt.verifyToken, validation.validate("search")],
+  Patient.searchAllergies
+);
+router.post(
+  "/patient/:patient_id/allergies",
+  [authJwt.verifyToken, validation.validate("createPatientAllergy")],
+  Patient.createPatientAllergy
+);
+router.get(
+  "/patient/:patient_id/documents/",
+  [authJwt.verifyToken],
+  Patient.getDocuments
+);
+router.put(
+  "/patient/:id/documents/:id",
+  [authJwt.verifyToken],
+  Patient.updateDocuments
+);
+router.get(
+  "/patient/:patient_id/documents/check",
+  [authJwt.verifyToken],
+  Patient.checkDocument
+);
+router.post(
+  "/patient/:patient_id/documents",
+  [authJwt.verifyToken],
+  Patient.createDocuments
+);
+/** encounters */
+router.get(
+  "/patient/:patient_id/encounters",
+  [authJwt.verifyToken],
+  Patient.getEncounters
+);
+router.post(
+  "/patient/:patient_id/encounters",
+  [authJwt.verifyToken],
+  Patient.createEncounter
+);
+router.put(
+  "/patient/:patient_id/encounters/:id",
+  [authJwt.verifyToken],
+  Patient.updateEncounter
+);
+router.delete(
+  "/patient/:patient_id/encounters/:id",
+  [authJwt.verifyToken],
+  Patient.deleteEncounter
+);
+router.get(
+  "/patient/:patient_id/medical-notes/history",
+  [authJwt.verifyToken],
+  Patient.getMedicalNotesHistory
+);
+router.put(
+  "/patient/:patient_id/medical-notes/history/",
+  [authJwt.verifyToken],
+  Patient.medicalNotesHistoryUpdate
+);
+router.get(
+  "/patient/:patient_id/messages",
+  [authJwt.verifyToken],
+  Patient.getMessages
+);
+router.post(
+  "/patient/:patient_id/messages",
+  [authJwt.verifyToken],
+  Patient.createMessage
+);
+router.put(
+  "/patient/:patient_id/messages/:id",
+  [authJwt.verifyToken],
+  Patient.updateMessage
+);
+router.delete(
+  "/patient/:patient_id/messages/:id",
+  [authJwt.verifyToken],
+  Patient.deleteMessage
+);
+router.get(
+  "/patient/:patient_id/all-tests",
+  [authJwt.verifyToken],
+  Patient.getAllTests
+);
+router.get(
+  "/patient/:patient_id/diagnoses",
+  [authJwt.verifyToken],
+  Patient.getDiagnoses
+);
+router.get(
+  "/patient/:patient_id/diagnoses/recent-icds",
+  [authJwt.verifyToken],
+  Patient.getRecentDiagnoses
+);
+router.get(
+  "/patient/:patient_id/diagnoses/favorite-icds",
+  [authJwt.verifyToken],
+  Patient.getFavoriteDiagnoses
+);
+router.post(
+  "/patient/:patient_id/requisitions/search-tests",
+  [authJwt.verifyToken],
+  Patient.searchTests
+);
+router.get(
+  "/patient/:patient_id/requisitions/recent-tests",
+  [authJwt.verifyToken],
+  Patient.getRecentTests
+);
+router.get(
+  "/patient/:patient_id/requisitions/favorite-tests",
+  [authJwt.verifyToken],
+  Patient.getFavoriteTests
+);
+router.put(
+  "/patient/:patient_id/diagnoses/:icd_id",
+  [authJwt.verifyToken],
+  Patient.updateDiagnose
+);
+router.delete(
+  "/patient/:patient_id/diagnoses/:icd_id",
+  [authJwt.verifyToken],
+  Patient.deleteDiagnose
+);
+router.post(
+  "/patient/:patient_id/diagnoses",
+  [authJwt.verifyToken],
+  Patient.createDiagnoses
+);
+router.get(
+  "/patient/:patient_id/medications",
+  [authJwt.verifyToken],
+  Patient.getMedications
+);
+router.post(
+  "/patient/:patient_id/medications",
+  [authJwt.verifyToken],
+  Patient.createMedications
+);
+router.put(
+  "/patient/:patient_id/medications/:id",
+  [authJwt.verifyToken],
+  Patient.updateMedications
+);
+router.get(
+  "/patient/:patient_id/medications/:medication_id",
+  [authJwt.verifyToken],
+  Patient.getMedicationById
+);
+router.get(
+  "/patient/:patient_id/medication/favorites",
+  [authJwt.verifyToken],
+  Patient.getMedicationFavorites
+);
+router.get(
+  "/patient/:patient_id/medication/recents",
+  [authJwt.verifyToken],
+  Patient.getMedicationRecents
+);
+router.delete(
+  "/patient/:patient_id/medications/:drug_id",
+  [authJwt.verifyToken],
+  Patient.deleteMedications
+);
+router.get(
+  "/patient/:patient_id/requisitions",
+  [authJwt.verifyToken],
+  Patient.getRequisitions
+);
+router.post(
+  "/patient/:patient_id/requisitions",
+  [authJwt.verifyToken],
+  Patient.createRequisitions
+);
+router.delete(
+  "/patient/:patient_id/requisitions/:id",
+  [authJwt.verifyToken],
+  Patient.deleteRequisitions
+);
+router.get(
+  "/patient-layout/:user_id",
+  [authJwt.verifyToken],
+  Patient.getLayout
+);
+router.post(
+  "/patient-layout/:user_id",
+  [authJwt.verifyToken],
+  Patient.saveLayout
+);
+router.delete(
+  "/patient-layout/:user_id",
+  [authJwt.verifyToken],
+  Patient.deleteLayout
+);
+router.get(
+  "/patient/:patient_id/payment-methods",
+  [authJwt.verifyToken],
+  Patient.getPaymentMethods
+);
+router.post(
+  "/patient/:patient_id/payment-methods",
+  [authJwt.verifyToken],
+  Patient.createPaymentMethod
+);
+router.put(
+  "/patient/:patient_id/payment-methods/:id",
+  [authJwt.verifyToken],
+  Patient.updatePaymentMethod
+);
+router.delete(
+  "/patient/:patient_id/payment-methods/:id",
+  [authJwt.verifyToken],
+  Patient.deletePaymentMethod
+);
+
+router.get("/drug/search", [authJwt.verifyToken], Patient.getDrugs);
+router.get("/icd/search", [authJwt.verifyToken], Patient.getIcds);
+
+module.exports = router;
